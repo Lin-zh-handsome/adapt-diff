@@ -1,5 +1,7 @@
 # Robomimic Can PH 图像正式实验
 
+**状态：2026-10-08 已按用户要求停止。数据、代码和日志保留；后续 benchmark 改用四项 RoboTwin 2.0 任务。**
+
 本实验在 `/home/hanjinwei/p1/project/diffusion_policy` 运行；本仓库 `experiments/adaptive_timestep_cnn` 是对应算法代码的发布副本。两组实验仅切换 `--mode`，共用官方完整 Can PH 图像数据和基线配置。
 
 ## 数据

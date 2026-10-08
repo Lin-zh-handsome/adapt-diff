@@ -7,7 +7,11 @@
 - [阶段 1–2 方法审查](reports/STEP1_STEP2_REVIEW.md)：记录将论文方法迁移到图像条件机器人动作扩散策略的方案与差异。该报告是实现前的审查快照。
 - [CNN Diffusion Policy（卷积神经网络扩散策略）适配原型](experiments/adaptive_timestep_cnn/)：包括自适应时间步采样器、训练步骤编排、损失反馈、配置、测试源文件和已有的合成运行记录。
 
-## 正式实验
+## RoboTwin 2.0 正式实验
+
+- [四任务 CNN DP 自适应时间步实验](experiments/robotwin2_adaptive_cnn/)：基于现有 XPolicyLab 官方 DP，Vanilla 与 Adaptive 均关闭自条件；训练结束后用官方 eval.sh 独立评测。
+
+## 已停止的 Can 实验
 
 - [Robomimic Can PH 图像正式实验运行说明](RUN_CAN_PH.md)：官方数据下载、两组完整训练命令、GPU 分配和产物路径。
 
