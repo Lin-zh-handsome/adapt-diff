@@ -53,6 +53,8 @@ experiments/adaptive_timestep_cnn/runs/
 - 按原 `conda_environment.yaml` 将 `robomimic` 固定为 0.2.0、`robosuite` 固定为工程指定的 cheng-chi commit（构建版本 1.2.0），解决评测环境创建错误。
 - 实验入口在加载 normalizer（归一化器）后再执行 `model.to(device)` 和 `ema_model.to(device)`，与原训练工作区顺序一致，解决首批数据与模型设备不一致。
 - 两次失败启动的日志保留在各模式目录的 `can_seed42_start_failed_20261008_2015`、`can_seed42_start_failed_20261008_2018`。
-- 20:23 后 Vanilla 正式运行于物理 GPU 0，PID 624331；Adaptive 由 `adaptive_queue.log` 记录等待状态，Vanilla 完整结束后自动启动。
+- 20:30:19 Vanilla 在物理 GPU 0 重新启动，PID 638464；Adaptive 由 `adaptive_queue.log` 记录等待状态，Vanilla 完整结束后自动启动。
 
 这条记录说明启动状态，不代表训练已完成或已有成功率结论。
+
+- 原 Can 图像评测配置 `n_envs=28` 注明需 64 GB 内存。本机约 46 GiB，首次闭环评测中一个环境进程退出并使主进程收到 EOF；正式重启将两组共同的 `n_envs` 调为 8，仅减少并行环境数，保留 6 条训练评测轨迹、50 条测试轨迹、全部原种子、400 步上限和每 50 轮评测频率。该变更不涉及模型、扩散推理或训练步数。失败日志另存于 `can_seed42_start_failed_20261008_2023`。
