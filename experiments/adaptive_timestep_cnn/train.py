@@ -139,6 +139,10 @@ def run(args):
     model.set_normalizer(normalizer)
     if ema_model:
         ema_model.set_normalizer(normalizer)
+    # set_normalizer loads new CPU buffers; follow the original workspace order.
+    model.to(device)
+    if ema_model:
+        ema_model.to(device)
     data_generator = torch.Generator().manual_seed(seed)
     train_loader = DataLoader(dataset, generator=data_generator, **cfg.dataloader)
     val_loader = DataLoader(val_dataset, **cfg.val_dataloader)

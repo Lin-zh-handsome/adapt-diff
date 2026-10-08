@@ -18,23 +18,19 @@ if [ "$actual" -ne 2010694944 ]; then
   exit 1
 fi
 "$python" -c 'import h5py,sys; f=h5py.File(sys.argv[1],"r"); assert len(f["data"])>0; print("HDF5 readable: demos="+str(len(f["data"]))); f.close()' "$data" >> "$status" 2>&1
+vanilla="$runs/vanilla/can_seed42"
+adaptive="$runs/adaptive/can_seed42"
+if [ -e "$vanilla" ] || [ -e "$adaptive" ]; then
+  printf '%s existing_output_prevents_new_run\n' "$(date -Is)" >> "$status"
+  exit 1
+fi
 cd "$project"
-for mode in vanilla adaptive; do
-  out="$runs/$mode/can_seed42"
-  if [ -e "$out" ]; then
-    printf '%s existing_output=%s\n' "$(date -Is)" "$out" >> "$status"
-    exit 1
-  fi
-done
-for mode in vanilla adaptive; do
-  gpu=0
-  if [ "$mode" = adaptive ]; then gpu=1; fi
-  out="$runs/$mode/can_seed42"
-  mkdir -p "$out"
-  printf 'mode=%s\ntask=can_image\nrun_name=can_seed42\nseed=42\nphysical_gpu=%s\nvisible_device=cuda:0\ndataset=%s\n' "$mode" "$gpu" "$data" > "$out/launch_config.txt"
-  CUDA_VISIBLE_DEVICES="$gpu" PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 nohup "$python" -u -m experiments.adaptive_timestep_cnn.train --mode "$mode" --task can_image --run-name can_seed42 --device cuda:0 > "$out/stdout.log" 2>&1 < /dev/null &
-  pid=$!
-  printf '%s\n' "$pid" > "$out/train.pid"
-  printf '%s launched mode=%s physical_gpu=%s pid=%s log=%s\n' "$(date -Is)" "$mode" "$gpu" "$pid" "$out/stdout.log" >> "$status"
-done
+mkdir -p "$vanilla"
+printf 'mode=vanilla\ntask=can_image\nrun_name=can_seed42\nseed=42\nphysical_gpu=0\nvisible_device=cuda:0\ndataset=%s\n' "$data" > "$vanilla/launch_config.txt"
+CUDA_VISIBLE_DEVICES=0 PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 nohup "$python" -u -m experiments.adaptive_timestep_cnn.train --mode vanilla --task can_image --run-name can_seed42 --device cuda:0 > "$vanilla/stdout.log" 2>&1 < /dev/null &
+pid=$!
+printf '%s\n' "$pid" > "$vanilla/train.pid"
+printf '%s launched_vanilla gpu=0 pid=%s\n' "$(date -Is)" "$pid" >> "$status"
+nohup bash "$experiment/queue_adaptive_after_vanilla.sh" > "$runs/adaptive_queue.stdout.log" 2>&1 < /dev/null &
+printf '%s queued_adaptive supervisor_pid=%s\n' "$(date -Is)" "$!" >> "$status"
 

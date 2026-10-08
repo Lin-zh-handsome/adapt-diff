@@ -28,7 +28,7 @@ PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 CUDA_VISIBLE_DEVICES=1 \
   --mode adaptive --task can_image --run-name can_seed42 --device cuda:0
 ```
 
-第二个命令通过 `CUDA_VISIBLE_DEVICES=1` 使用物理 GPU 1；进程内部的 `cuda:0` 指向该卡。两张 GPU 足够空闲时可并行，否则顺序运行。实际任务由实验目录中的 `launch_after_download.sh` 在下载完成后用 `nohup` 后台启动。
+第二个命令通过 `CUDA_VISIBLE_DEVICES=1` 使用物理 GPU 1；进程内部的 `cuda:0` 指向该卡。两张 GPU 与系统内存均足够空闲时可并行；本服务器同时初始化两组评测环境会产生内存压力，因此采用顺序运行。实际任务由实验目录中的 `launch_after_download.sh` 在下载完成后用 `nohup` 启动 Vanilla，`queue_adaptive_after_vanilla.sh` 在 Vanilla 完整结束后自动启动 Adaptive。
 
 两组实验沿用原图像 CNN Diffusion Policy（卷积神经网络扩散策略）配置：seed 42、8000 epoch（完整轮次）、batch size 64、100 个 DDPM（去噪扩散概率模型）时间步、100 步推理、每轮固定均匀时间步验证、每 50 轮闭环评测和 Checkpoint（检查点）。`max_train_steps` 与 `max_val_steps` 均为 null。Adaptive（自适应）仅增加官方方法对应的采样器和反馈更新。
 
@@ -46,3 +46,13 @@ experiments/adaptive_timestep_cnn/runs/
 
 数据、日志和权重保留在服务器实验目录，不提交到本仓库。
 
+
+## 2026-10-08 启动记录
+
+- 官方文件完整，HDF5 可读，包含 200 条演示轨迹。
+- 按原 `conda_environment.yaml` 将 `robomimic` 固定为 0.2.0、`robosuite` 固定为工程指定的 cheng-chi commit（构建版本 1.2.0），解决评测环境创建错误。
+- 实验入口在加载 normalizer（归一化器）后再执行 `model.to(device)` 和 `ema_model.to(device)`，与原训练工作区顺序一致，解决首批数据与模型设备不一致。
+- 两次失败启动的日志保留在各模式目录的 `can_seed42_start_failed_20261008_2015`、`can_seed42_start_failed_20261008_2018`。
+- 20:23 后 Vanilla 正式运行于物理 GPU 0，PID 624331；Adaptive 由 `adaptive_queue.log` 记录等待状态，Vanilla 完整结束后自动启动。
+
+这条记录说明启动状态，不代表训练已完成或已有成功率结论。
