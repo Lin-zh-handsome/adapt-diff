@@ -222,6 +222,8 @@ def publish(results, states):
     subprocess.run(["git", "-C", str(repo), "add", str(dest)], check=True)
     subprocess.run(["git", "-C", str(repo), "commit", "-m",
                     f"Record {CAMPAIGN} RoboTwin results"], check=True)
+    subprocess.run(["git", "-C", str(repo), "fetch", "origin", "main"], check=True)
+    subprocess.run(["git", "-C", str(repo), "rebase", "origin/main"], check=True)
     subprocess.run(["git", "-C", str(repo), "push", "origin", "main"], check=True)
     event("results_published", repo=str(repo), complete=all_complete)
 
