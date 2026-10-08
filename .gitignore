@@ -1,0 +1,4 @@
+experiments/adaptive_timestep_cnn/data/
+experiments/adaptive_timestep_cnn/runs/
+experiments/adaptive_timestep_cnn/**/__pycache__/
+
