@@ -3,6 +3,8 @@
 工程：/home/hanjinwei/p1/project/diffusion_policy
 论文源码：/home/hanjinwei/p1/project/Adaptive-Timestep-Sampler
 
+注：本文记录自适应采样器实现前的阶段 1–2 方案审查；后续原型代码与合成数据验证见 [`experiments/adaptive_timestep_cnn/`](../experiments/adaptive_timestep_cnn/)。
+
 ## 现状
 Vanilla 目标是 diffusion_policy/policy/diffusion_unet_image_policy.py 的 DiffusionUnetImagePolicy，不是 Transformer/自条件/Flow Matching。配置 diffusion_policy/config/train_diffusion_unet_image_workspace.yaml 使用 ResNet18 编码器、ConditionalUnet1D + FiLM、H=16/To=2/Ta=8、DDPM T=100、squaredcos_cap_v2、fixed_small、epsilon 预测。compute_loss :192-259 归一化动作、torch.randint 均匀采时间步、add_noise、masked MSE。推理 conditional_sample :83-120 保持原样。训练入口 workspace/train_diffusion_unet_image_workspace.py :34-300 负责优化、EMA、runner、日志、Checkpoint。现有验证仍随机采 t，不适合直接比较固定均匀验证损失。p1 中找到 Can PH low_dim.hdf5，但没有 image.hdf5；图像实验尚无数据依据。工作树有既有大量暂存删除，本研究不触碰。
 

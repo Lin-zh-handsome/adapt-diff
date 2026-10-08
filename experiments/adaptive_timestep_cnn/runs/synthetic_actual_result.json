@@ -1,0 +1,22 @@
+{
+  "loss": 0.955952525138855,
+  "optimizer_stepped": true,
+  "sampler_updated": true,
+  "optimizer_steps": 1,
+  "actor_loss": -0.019547510892152786,
+  "kl_delta_mean": -2.2772698402404785,
+  "selected": [
+    0,
+    1,
+    2
+  ],
+  "seconds": 2.9407164519652724,
+  "device": "cuda:0",
+  "action_shape": [
+    1,
+    16,
+    7
+  ],
+  "encoder": "MultiImageObsEncoder",
+  "denoiser": "ConditionalUnet1D"
+}
